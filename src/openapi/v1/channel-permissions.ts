@@ -5,6 +5,7 @@ import {
   IChannelPermissions,
   IChannelRolePermissions,
   UpdateChannelPermissions,
+  UpdateChannelMemberPermissionsBatch,
 } from '@src/types';
 import { RestyResponse } from 'resty-client';
 import { getURL } from './resource';
@@ -20,7 +21,7 @@ export default class ChannelPermissions implements ChannelPermissionsAPI {
   public channelPermissions(channelID: string, userID: string): Promise<RestyResponse<IChannelPermissions>> {
     const options = {
       method: 'GET' as const,
-      url: getURL('channelPermissionsURI'),
+      url: getURL('channelMemberPermissionsURI'),
       rest: {
         channelID,
         userID,
@@ -44,10 +45,33 @@ export default class ChannelPermissions implements ChannelPermissionsAPI {
     }
     const options = {
       method: 'PUT' as const,
-      url: getURL('channelPermissionsURI'),
+      url: getURL('channelMemberPermissionsURI'),
       rest: {
         channelID,
         userID,
+      },
+      data: p,
+    };
+    return this.request<IChannelPermissions>(options);
+  }
+
+  // 批量修改指定子频道的权限
+  public putChannelPermissionsBatch(
+    channelID: string,
+    p: UpdateChannelMemberPermissionsBatch,
+  ): Promise<RestyResponse<any>> {
+    try {
+      // 校验参数
+      parseInt(p.add, 10);
+      parseInt(p.remove, 10);
+    } catch (error) {
+      return Promise.reject(new Error('invalid parameter'));
+    }
+    const options = {
+      method: 'PUT' as const,
+      url: getURL('channelPermissionsURI'),
+      rest: {
+        channelID,
       },
       data: p,
     };

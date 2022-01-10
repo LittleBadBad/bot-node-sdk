@@ -6,6 +6,7 @@ import { RestyResponse } from 'resty-client';
 export interface ChannelPermissionsAPI {
   // ChannelPermissions 获取指定子频道的权限
   channelPermissions: (channelID: string, userID: string) => Promise<RestyResponse<IChannelPermissions>>;
+
   // PutChannelPermissions 修改指定子频道的权限
   putChannelPermissions: (
     channelID: string,
@@ -13,8 +14,15 @@ export interface ChannelPermissionsAPI {
     p: UpdateChannelPermissions,
   ) => Promise<RestyResponse<any>>;
 
+  // PutChannelPermissionsBatch 批量修改子频道权限
+  putChannelPermissionsBatch: (
+    channelID: string,
+    p: UpdateChannelMemberPermissionsBatch,
+  ) => Promise<RestyResponse<any>>;
+
   // ChannelRolePermissions 获取指定子频道身份组的权限
   channelRolePermissions: (channelID: string, roleID: string) => Promise<RestyResponse<IChannelRolePermissions>>;
+
   // PutChannelRolePermissions 修改指定子频道身份组的权限
   putChannelRolePermissions: (
     channelID: string,
@@ -38,4 +46,8 @@ export interface IChannelRolePermissions {
 export interface UpdateChannelPermissions {
   add: string;
   remove: string;
+}
+
+export interface UpdateChannelMemberPermissionsBatch extends UpdateChannelPermissions {
+  user_ids: string[];
 }
