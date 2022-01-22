@@ -2,7 +2,7 @@ const domain = 'api.sgroup.qq.com';
 const sandBoxDomain = 'sandbox.api.sgroup.qq.com';
 const scheme = 'https';
 
-const apiMap = {
+export const apiMap = {
   guildURI: '/guilds/:guildID',
   guildMembersURI: '/guilds/:guildID/members',
   guildMemberURI: '/guilds/:guildID/members/:userID',

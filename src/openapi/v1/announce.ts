@@ -1,20 +1,22 @@
-import { Config, OpenAPIRequest, AnnounceAPI, IAnnounce } from '@src/types';
-import { RestyResponse } from 'resty-client';
-import { getURL } from './resource';
+import {Config, OpenAPIRequest, AnnounceAPI, IAnnounce} from '@src/types';
+import {RestyResponse} from 'resty-client';
+import {apiMap, getURL} from "@src/openapi/v1/resource"
 
 export default class Announce implements AnnounceAPI {
   public request: OpenAPIRequest;
   public config: Config;
+
   constructor(request: OpenAPIRequest, config: Config) {
     this.request = request;
     this.config = config;
   }
 
+
   // 创建guild公告
   public postGuildAnnounce(guildID: string, channelID: string, messageID: string): Promise<RestyResponse<IAnnounce>> {
     const options = {
       method: 'POST' as const,
-      url: getURL(this.config.sandbox)('guildAnnouncesURI'),
+      url: this.getURL('guildAnnouncesURI'),
       rest: {
         guildID,
       },
@@ -30,7 +32,7 @@ export default class Announce implements AnnounceAPI {
   public deleteGuildAnnounce(guildID: string, messageID: string): Promise<RestyResponse<any>> {
     const options = {
       method: 'DELETE' as const,
-      url: getURL(this.config.sandbox)('guildAnnounceURI'),
+      url: this.getURL('guildAnnounceURI'),
       rest: {
         guildID,
         messageID,
@@ -43,7 +45,7 @@ export default class Announce implements AnnounceAPI {
   public postChannelAnnounce(channelID: string, messageID: string): Promise<RestyResponse<IAnnounce>> {
     const options = {
       method: 'POST' as const,
-      url: getURL(this.config.sandbox)('channelAnnouncesURI'),
+      url: this.getURL('channelAnnouncesURI'),
       rest: {
         channelID,
       },
@@ -58,12 +60,15 @@ export default class Announce implements AnnounceAPI {
   public deleteChannelAnnounce(channelID: string, messageID: string): Promise<RestyResponse<any>> {
     const options = {
       method: 'DELETE' as const,
-      url: getURL(this.config.sandbox)('channelAnnounceURI'),
+      url: this.getURL('channelAnnounceURI'),
       rest: {
         channelID,
         messageID,
       },
     };
     return this.request(options);
+  }
+  private getURL(url: keyof typeof apiMap) {
+    return getURL(this.config.sandbox)(url)
   }
 }

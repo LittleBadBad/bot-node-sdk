@@ -88,6 +88,7 @@ export class Ws {
           this.heartbeatParam.d = s;
         }
         this.event.emit(SessionEvents.READY, {eventType: SessionEvents.READY, msg: d || ''});
+        this.event.emit(SessionEvents.EVENT_WS, {eventType: SessionEvents.READY});
         // 第一次发送心跳
         console.log(`[CLIENT] 发送第一次心跳`, this.heartbeatParam);
         this.sendWs(this.heartbeatParam);
@@ -125,7 +126,11 @@ export class Ws {
     this.ws.on('close', (data: number) => {
       console.log('[CLIENT] 连接关闭', data);
       // 通知会话，当前已断线
-      this.event.emit(SessionEvents.EVENT_WS, {eventType: SessionEvents.DISCONNECT, eventMsg: this.sessionRecord});
+      this.event.emit(SessionEvents.EVENT_WS, {
+        eventType: SessionEvents.DISCONNECT,
+        eventMsg: this.sessionRecord,
+        code: data
+      });
       if (data) {
         this.handleWsCloseEvent(data);
       }
@@ -236,12 +241,7 @@ export class Ws {
 
   // 重新连接
   reconnect() {
-    console.log('[CLIENT] 开始断线重连');
-    this.isReconnect = true;
-    // 断线后需要 1s后再重新连接
-    setTimeout(() => {
-      this.createListening();
-    }, 1000);
+    console.log('[CLIENT] 等待断线重连');
   }
 
   // 重新重连Ws

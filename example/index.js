@@ -32,6 +32,10 @@ ws.on('AT_MESSAGES', (data) => {
   console.log('[AT_MESSAGES] 事件接收 :', data);
 });
 
+ws.on('DEAD', data => {
+  console.info('[DEAD] 事件接收 :', data);
+})
+
 client.guildApi.guild('').then((data) => {
   console.log(data);
 });
