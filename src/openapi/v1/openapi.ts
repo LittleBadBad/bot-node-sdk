@@ -1,6 +1,6 @@
 /* eslint-disable prefer-promise-reject-errors */
-import { register } from '@src/openapi/openapi';
-import resty, { RequestOptions, RestyResponse } from 'resty-client';
+import {register} from '@src/openapi/openapi';
+import resty, {RequestOptions, RestyResponse} from 'resty-client';
 import Guild from './guild';
 import Channel from './channel';
 import Me from './me';
@@ -13,22 +13,22 @@ import Audio from './audio';
 import Mute from './mute';
 import Announce from './announce';
 import Schedule from './schedule';
-import { addUserAgent, addAuthorization, buildUrl } from '@src/utils/utils';
+import {addUserAgent} from '@src/utils/utils';
 import {
-  GuildAPI,
-  ChannelAPI,
-  MeAPI,
-  MessageAPI,
-  Config,
-  IOpenAPI,
-  MemberAPI,
-  RoleAPI,
-  DirectMessageAPI,
-  ChannelPermissionsAPI,
-  AudioAPI,
-  MuteAPI,
-  ScheduleAPI,
   AnnounceAPI,
+  AudioAPI,
+  ChannelAPI,
+  ChannelPermissionsAPI,
+  Config,
+  DirectMessageAPI,
+  GuildAPI,
+  IOpenAPI,
+  MeAPI,
+  MemberAPI,
+  MessageAPI,
+  MuteAPI,
+  RoleAPI,
+  ScheduleAPI,
 } from '@src/types';
 
 export const apiVersion = 'v1';
@@ -39,8 +39,9 @@ export class OpenAPI implements IOpenAPI {
   }
 
   config: Config = {
+    sandbox: false,
     appID: '',
-    token: '',
+    token: ''
   };
   public guildApi!: GuildAPI;
   public channelApi!: ChannelAPI;
@@ -54,12 +55,10 @@ export class OpenAPI implements IOpenAPI {
   public directMessageApi!: DirectMessageAPI;
   public channelPermissionsApi!: ChannelPermissionsAPI;
   public audioApi!: AudioAPI;
-
   constructor(config: Config) {
     this.config = config;
     this.register(this);
   }
-
   public register(client: IOpenAPI) {
     // 注册聚合client
     client.guildApi = new Guild(this.request, this.config);
@@ -78,15 +77,12 @@ export class OpenAPI implements IOpenAPI {
   // 基础rest请求
   public request<T extends Record<any, any> = any>(options: RequestOptions): Promise<RestyResponse<T>> {
     const { appID, token } = this.config;
-
-    options.headers = { ...options.headers };
-
+    options.headers = {
+      ...options.headers,
+      Authorization: `Bot ${appID}.${token}`,
+    };
     // 添加 UA
     addUserAgent(options.headers);
-    // 添加鉴权信息
-    addAuthorization(options.headers, appID, token);
-    // 组装完整Url
-    const botUrl = buildUrl(options.url, this.config.sandbox);
 
     // 简化错误信息，后续可考虑通过中间件形式暴露给用户自行处理
     resty.useRes(
@@ -110,7 +106,7 @@ export class OpenAPI implements IOpenAPI {
     );
 
     const client = resty.create(options);
-    return client.request<T>(botUrl!, options);
+    return client.request<T>(options.url!, options);
   }
 }
 

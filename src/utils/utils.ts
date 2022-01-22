@@ -1,5 +1,5 @@
-import { AxiosRequestHeaders } from 'axios';
-import { version } from '../../package.json';
+import {AxiosRequestHeaders} from 'axios';
+import {version} from '../../package.json';
 
 // 延迟
 export const delayTime = (ms: number) => {
@@ -41,11 +41,42 @@ export const addUserAgent = (header: AxiosRequestHeaders) => {
   const sdkVersion = version;
   header['User-Agent'] = `BotNodeSDK/v${sdkVersion}`;
 };
-// 添加 User-Agent
-export const addAuthorization = (header: AxiosRequestHeaders, appID: string, token: string) => {
-  header['Authorization'] = `Bot ${appID}.${token}`;
-};
-// 组装完整Url
-export const buildUrl = (path = '', isSandbox?: boolean) => {
-  return `${isSandbox ? 'https://sandbox.api.sgroup.qq.com' : 'https://api.sgroup.qq.com'}${path}`;
-};
+
+
+function getMultiLevel(json: Object, key: string) {
+  let d = json
+  for (const v of key.split('.')) {
+    // @ts-ignore
+    d = d[v]
+    if (!d) {
+      return d
+    }
+  }
+  return d
+}
+
+export function isIn(list: Array<Object>, data: Object, key = 'id') {
+  if (!list || !data || !list.length) {
+    return false
+  }
+  for (const v of list) {
+    if (getMultiLevel(v, key) && getMultiLevel(v, key) === getMultiLevel(data, key)) {
+      return true
+    }
+  }
+  return false
+}
+
+export function indexOf(list: Array<Object>, data: Object, key = 'id'): number {
+  let i = 0
+  if (!list || !data || !list.length) {
+    return -1
+  }
+  for (const v of list) {
+    if (getMultiLevel(v, key) && getMultiLevel(v, key) === getMultiLevel(data, key)) {
+      return i
+    }
+    i++
+  }
+  return -1
+}
