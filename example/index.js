@@ -1,19 +1,15 @@
-const {createOpenAPI, createWebsocket} = require('../lib');
+import { createOpenAPI, createWebsocket } from 'qq-guild-bot';
 
 const testConfig = {
   appID: '',
   token: '',
+  intents: ['GUILDS'],
 };
 
 const client = createOpenAPI(testConfig);
 
-const testConfigWs = {
-  appID: '',
-  token: '',
-  intents: ['GUILDS', 'GUILD_MEMBERS', 'AUDIO_ACTION', 'AT_MESSAGES'],
-  timeout: 3000,
-};
-const ws = createWebsocket(testConfigWs);
+const ws = createWebsocket(testConfig);
+
 ws.on('READY', (data) => {
   console.log('[READY] 事件接收 :', data);
 });
@@ -41,6 +37,6 @@ client.guildApi.guild('').then((data) => {
 });
 
 // ✅
-// client.channelApi.channels(guildID).then((res) => {
-//   console.log(res.data);
-// });
+client.channelApi.channels(guildID).then((res) => {
+  console.log(res.data);
+});
