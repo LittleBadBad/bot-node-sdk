@@ -30,6 +30,7 @@ export default class WebsocketClient extends EventEmitter {
           }
           break;
         case SessionEvents.READY:
+          console.log('[CLIENT] 连接成功');
           this.retry = 0;
           break;
         default:

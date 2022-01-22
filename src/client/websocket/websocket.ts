@@ -69,6 +69,7 @@ export class Ws {
       const wsRes = toObject(data);
       // 先判断websocket连接是否成功
       if (wsRes?.op === OpCode.HELLO && wsRes?.d?.heartbeat_interval) {
+        this.event.emit(SessionEvents.EVENT_WS, {eventType: SessionEvents.READY});
         // websocket连接成功，拿到心跳周期
         this.heartbeatInterval = wsRes?.d?.heartbeat_interval;
         // 非断线重连时，需要鉴权
@@ -88,7 +89,6 @@ export class Ws {
           this.heartbeatParam.d = s;
         }
         this.event.emit(SessionEvents.READY, {eventType: SessionEvents.READY, msg: d || ''});
-        this.event.emit(SessionEvents.EVENT_WS, {eventType: SessionEvents.READY});
         // 第一次发送心跳
         console.log(`[CLIENT] 发送第一次心跳`, this.heartbeatParam);
         this.sendWs(this.heartbeatParam);
